@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2FriendsTopUp Data Viewer</title>
+  <link rel="icon" href="logo.png" type="image/png">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f0f0f0;
+      color: #333;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+    }
+
+    .container {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 600px;
+    }
+
+    .data-item {
+      background: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 10px;
+      margin: 10px 0;
+      text-align: left;
+    }
+
+    .loader {
+      width: 48px;
+      height: 48px;
+      margin: 20px auto;
+      animation: rotate 2s linear infinite;
+    }
+
+    .loader:before {
+      content: "";
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: 6px solid #fff;
+      border-radius: 50%;
+      border-top-color: #0072ff;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes rotate {
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+</head>
+<body>
+  <h2>2FriendsTopUp Data Viewer</h2>
+
+  <div class="container">
+    <div id="data-container">
+      <!-- Data will be displayed here -->
+    </div>
+    <div class="loader" id="loading"></div>
+    <p id="error-message" style="color: red; display: none;">Error loading data. Please try again later.</p>
+  </div>
+
+  <!-- Firebase scripts -->
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
+  <script>
+    // Firebase configuration
+    var firebaseConfig = {
+      apiKey: "AIzaSyCIPtHcmFwV1NQ95_w4uz-SqA62yqbWEqQ",
+      authDomain: "jashoreshop-1bd50.firebaseapp.com",
+      databaseURL: "https://jashoreshop-1bd50-default-rtdb.firebaseio.com",
+      projectId: "jashoreshop-1bd50",
+      storageBucket: "jashoreshop-1bd50.appspot.com",
+      messagingSenderId: "538389037858",
+      appId: "1:538389037858:web:7477721bd6a484174f1b7b",
+      measurementId: "G-M2KVL1M6SN"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+
+    const dbRef = firebase.database().ref("topups");
+    const dataContainer = document.getElementById('data-container');
+    const loading = document.getElementById('loading');
+    const errorMessage = document.getElementById('error-message');
+
+    // Fetch data from Firebase
+    dbRef.on('value', function(snapshot) {
+      loading.style.display = 'none';
+      const data = snapshot.val();
+      if (data) {
+        dataContainer.innerHTML = '';
+        for (const key in data) {
+          const item = data[key];
+          dataContainer.innerHTML += `
+            <div class="data-item">
+              <p><strong>Coupon Code:</strong> ${item.couponCode}</p>
+              <p><strong>Player Name:</strong> ${item.playerName}</p>
+              <p><strong>Player UID:</strong> ${item.playerUID}</p>
+              <p><strong>Diamonds:</strong> ${item.diamonds}</p>
+              <p><strong>Timestamp:</strong> ${item.timestamp}</p>
+            </div>
+          `;
+        }
+      } else {
+        dataContainer.innerHTML = '<p>No data available.</p>';
+      }
+    }, function(error) {
+      loading.style.display = 'none';
+      errorMessage.style.display = 'block';
+    });
+  </script>
+</body>
+</html>
